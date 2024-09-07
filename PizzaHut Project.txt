@@ -1,0 +1,167 @@
+
+select * from pizzahut.pizza_types;
+select * from pizzahut.order_details;
+select * from pizzahut.orders;
+select * from pizzahut.pizzas;
+
+-- Q1 Retrive the total number of orders placed. 
+select count(order_id) as Total_orders from pizzahut.orders;
+-- Output Total_Orders = '21350'
+
+-- Q2 Calculate the total revenue generated from pizza sales. 
+SELECT 
+    round(SUM(order_details.quantity * pizzas.price),2) AS Total_Sales
+    From 
+    pizzahut.order_details
+        JOIN
+    pizzahut.pizzas ON pizzas.pizza_id = order_details.pizza_id;
+-- Output Total Sales = '382719.65'
+
+--  Q3 Identify the highest-priced pizza. 
+SELECT 
+    pizza_types.name, pizzas.price
+FROM
+    pizzahut.pizza_types
+        JOIN
+    pizzahut.pizzas ON pizza_types.pizza_type_id = pizzas.pizza_type_id
+ORDER BY pizzas.price DESC
+LIMIT 1;
+ -- Output name The Greek Pizza , Price 35.95
+
+-- Q4 Identify the most common pizza size ordered. 
+SELECT 
+    pizzas.size,
+    COUNT(order_details.order_details_id) AS Order_Count
+FROM
+    pizzahut.pizzas
+        JOIN
+    pizzahut.order_details ON pizzas.pizza_id = order_details.pizza_id
+GROUP BY pizzas.size
+ORDER BY order_count DESC;
+/* Output 
+Size Order_Count
+L  8698
+M  7176
+S  6568
+XL 273
+XXL 15
+*/
+-- Q5 List the 5 top most selling pizzas along with their quantity
+SELECT 
+    pizza_types.name, SUM(order_details.quantity) AS Quantity
+FROM
+    pizzahut.pizza_types
+        JOIN
+    pizzahut.pizzas ON pizza_types.pizza_type_id = pizzas.pizza_type_id
+        JOIN
+    pizzahut.order_details ON order_details.pizza_id = pizzas.pizza_id
+GROUP BY pizza_types.name
+ORDER BY Quantity DESC
+LIMIT 5;
+/*Output 
+name                        quantity
+The Barbecue Chicken Pizza	   1180
+The Pepperoni Pizza	           1132
+The Hawaiian Pizza	           1121
+The Classic Deluxe Pizza	   1107
+The California Chicken Pizza   1094
+*/
+
+-- Q6 Join the necessary tables to find the total quantity of each category ordered.
+Select pizza_types.category,
+sum(order_details.quantity) as Quantity
+from pizzahut.pizza_types join pizzahut.pizzas 
+on pizza_types.pizza_type_id = pizzas.pizza_type_id
+join pizzahut.order_details
+on order_details.pizza_id = pizzas.pizza_id
+group by pizza_types.category order by Quantity desc;
+/*
+category Quantity
+Classic	6903
+Supreme	5628
+Veggie	5534
+Chicken	5108
+*/
+-- Q7 Determine the distribution of orders by the hours of the day.
+
+Select hour(time), count(order_id) from pizzahut.orders
+group by hour(time);
+/*
+hour   count
+(time) (order_id)
+	1541
+9	1
+10	8
+11	1145
+12	2341
+13	2264
+14	1359
+15	1378
+16	1783
+17	2163
+18	2217
+19	1876
+20	1525
+21	1110
+22	612
+23	27
+*/
+
+-- Q8  Join relevant tables to find the category-wise distribution of pizzas.
+select category, count(pizza_types.name) from pizzahut.pizza_types
+group by category;
+/* Output
+Category  count(Pizza_types.name)
+Chicken	  6
+Classic	  8
+Supreme	  9
+Veggie	  9
+*/
+
+-- Q9 Group the orders by date and calculate the average number of pizzas ordered per day.
+
+select round(avg(quantity),0) from 
+(Select date, sum(order_details.quantity) as quantity
+from pizzahut.orders join pizzahut.order_details 
+on orders.order_id = order_details.order_id
+group by orders.date) as order_quantity;
+
+/* Output -----
+round(avg(quantity),0)
+55
+
+
+-- Q10 Determine the top 3 most ordered pizza types based on revenue.
+Select pizza_types.name,
+sum(order_details.quantity * pizzas.price) as revenue
+from pizzahut.pizza_types join pizzahut.pizzas
+on pizzas.pizza_type_id  = pizza_types.pizza_type_id
+join pizzahut.order_details
+on order_details.pizza_id = pizzas.pizza_id
+group by pizza_types.name order by revenue desc limit 3;
+/*
+name                            revenue
+The Barbecue Chicken Pizza	    20793
+The Thai Chicken Pizza	        19380.5
+The California Chicken Pizza	19212.5
+
+*/
+-- Q11  Calculate the percentage contribution of each pizza type to total revenue.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
